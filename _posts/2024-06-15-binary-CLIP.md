@@ -1,8 +1,8 @@
 ---
-title: "S-[TB]RaCE"
+title: "S-BRaCE"
 author: hubi
 date: 2024-05-15 21:40:00 +0200
-description: Learning Sparse Binary and Ternary Representations of Contrastive Embeddings
+description: Learning Sparse Binary Representations of Contrastive Embeddings
 categories: [Blogging, ML]
 tags: [
     machine learning,
@@ -40,10 +40,10 @@ TODO: Revisit formulations (partly bad english)
 
 ## Intro
 
-This blog post introduces two methods called **S-BRaCE** to binarize CLIP[^1] (or other contrastively learned) embeddings and **T-BRaCE**  to create ternary representations.
+This blog post introduces a method called **S-BRaCE** to binarize CLIP[^1] (or other contrastively learned) embeddings.
 If somebody wonders why we would even want to do that, answers might be: lower memory usage, potentially faster lookup, interpretability (more on that in section: "Zero-Shot Results")...however I am not sure if this are good answers (probably something to explore in follow up posts).
 
-To be honest, this method originated just out of interest. Binarized and ternary CLIP[^1] embeddings might or might not be useful - at least to me it is an interesting problem. How would one train such a system? How well does it work? What limitations does it have? I believe that the general method which is developed here is not the worst approach and potentially could be of use for other problems e.g. in binary optimization. We will see.
+To be honest, this method originated just out of interest. Binarized CLIP[^1] embeddings might or might not be useful - at least to me it is an interesting problem. How would one train such a system? How well does it work? What limitations does it have? I believe that the general method which is developed here is not the worst approach and potentially could be of use for other problems (e.g. in binary optimization, as novel target representation etc. - i am exploring some currently). We will see.
 
 ### Prerequisite
 
@@ -55,8 +55,6 @@ It is assumed that the reader is familiar with [CLIP](https://arxiv.org/pdf/2103
 A more detailed literature review that also covers binary representation learning is planned!
 
 ## **S-BRaCE**
-
-We first start with **S-BRaCE**, i.e. binarization. We will see later, that we can reuse the optimization almost one to one for **T-BRaCE**. However, **T-BRaCE** is even simpler as we do not need even need to train additional networks, but can apply the method immediately on the CLIP embeddings.
 
 ### The Idea
 
@@ -282,7 +280,7 @@ It is clear that for the Jaccard index we have $\mathcal{J}(\mathbf{v}_1, \mathb
 
 ### A first Experiment
 
-> Experimentation is expansive time wise and I've got to juggle my time between family and work first. It is planned that updates with more extensive and thorough experiments are added over time. The character of the current results is more that of sanity testing
+> Experimentation is expansive time wise and I've got to juggle my time between family and work first. It is planned that updates with more extensive and thorough experiments are added over time (first ones are already in preparation). The character of the current results is more that of sanity testing
 > {: .prompt-info }
 
 It is clear that having binary representations is limiting. The question is how limiting it is. Here, first results are reported for the following setting:
@@ -353,7 +351,7 @@ The most frequent entries are active around 10%. My guess is that in a better **
 
 The next question is how likely collisions occur. My definition of a collision is:
 A collision has happened, when two different inputs of the same mode create the exact same binary representation. Let's check how many collisions occur in the validation dataset:
-TODO
+TBA
 
 #### Zero-Shot Results
 
@@ -364,7 +362,7 @@ Quite surprisingly plane, car, cat, dog, horse are represented exactly by one en
 
 <img src="/assets/img/plots/confusion.png" alt="alt drawing" width="500">
 
-TODO: interpret
+TBA: interpretation
 
 #### Retrieval from a (somewhat) large dataset
 
@@ -383,83 +381,6 @@ We test how well images are retrieved via prompts from larger batches of data. T
 ![Image 1](/assets/img/plots/dog.jpg) | ![Image 2](/assets/img/plots/dog_result.png)
 
 While CLIP retrievals are in general better (twice in these three examples the target is contained in the results), **S-BRaCE** results do make sense. Training on more data will likely improve the retrieval results considerably.
-
-## **T-BRaCE**
-
-Ternary embeddings have the advantage that also dissimilarities can be expressed. We use the embeddings $\mathbf{v} \in [-1,1]$ directly received from CLIP. This time we want to map them into the set
-
-$$
-\begin{equation}
-  \mathcal{T}_D :=  \{-1,0,1\}^D \setminus \mathbf{0}
-\end{equation}
-$$
-
-
-and like before we will define the optimization problem with a proxy set
-
-$$
-\begin{equation}
-  \mathcal{R}_D :=
- \left\{
-  { \frac{1}{ \sqrt{\mathbf{t}^T \mathbf{t}}} \mathbf{t}   \mid \mathbf{t} \in \mathcal{T}_D}.
-  \right\}
-\end{equation}
-$$
-The derivation of the optimization problem is exactly the same as in **S-BRaCE** abd we end up with the analog optimizaiton problem to (\ref{eq:optim_cos})  and (\ref{eq:optim_step1})
-
-$$
-\begin{equation}
-    \label{eq:optim_tbrace_cos }
-    \underset{ \mathbf{r} \in \mathcal{r}_D}{\operatorname{argmin}} || \mathbf{v} - \mathbf{r} ||^2 =  \underset{ \mathbf{r} \in \mathcal{R}_D}{\operatorname{argmax}} ~ \mathbf{v}^T\mathbf{r} \iff
-\end{equation}
-$$
-
-$$
-\begin{equation}
-    \label{eq:optim_tbrace_step1}
-    \underset{ \mathbf{t} \in \mathcal{T}_D}{\operatorname{argmax}} ~  \frac{1}{\sqrt{\mathbf{t}^T \mathbf{t}}} ~ \mathbf{v}^T\mathbf{t}.
-\end{equation}
-$$
-
-The difference now is that we also have negative values we need to account for. Of course, $\mathbf{v}^T\mathbf{t}$ is maximal when the signs in the entries match. This also means that our $\mathbf{t}^*$ will preserve the sign of $\mathbf{v}$ for all entries which are not zero. To find the optimum we can simply adapt the partial sum from (\ref{eq:partial_sum}):
-
-$$
-\begin{equation}
-    \label{eq:partial_sum_t}
-    \mathcal{S}_{tern}(K; \mathbf{v}) = \frac{1}{\sqrt{K}} \sum_{k=1}^K \mathbf{v}_{abs}[\mathbf{p}_{abs}]_k,
-\end{equation}
-$$
-
-where
-$$
-\begin{equation}
-    \label{eq:v_abs}
-    \mathbf{v}_{abs} =  \text abs(\mathbf{v})
-\end{equation}
-$$
-
-
-$$
-\begin{equation}
-    \label{eq:argsort_abs}
-    \mathbf{p}_{abs} =  \text{argsort}(\mathbf{v}_{abs}).
-\end{equation}
-$$
-
-The solution to the optimization problem then is 
-
-$$
-\begin{equation}
-    \label{eq:optimum_t}
-    \mathbf{t}^*_{\mathbf{p}_{abs}[1]} = \text{sign}( ~ \mathbf{v}_{\mathbf{p}_{abs}[1]}), \ldots, \mathbf{t}^*_{\mathbf{p}_
-    {abs}[K^*]} = \text{sign}( ~ \mathbf{v}_{\mathbf{p}_{abs}[K^*]}) 
-    \quad and \quad   {\mathbf{t}^*}^T \mathbf{t} = K^*; \quad \mathbf{t}^* \in \mathcal{T}
-    %\ast{\mathbf{b}}\mathbf{p}[:K]] = 1 \quad and \quad   {\mathbf{b}^*}^T \mathbf{1} = K
-\end{equation}
-$$
-
-### Experiments
-Experiments for **T-BRaCE** are a lot simpler to conduct, since no learning is involved. TODO
 
 ## Acknowledgements
 
