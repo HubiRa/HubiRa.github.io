@@ -9,27 +9,27 @@ theme: jekyll-theme-chirpy
 lang: en
 
 # Change to your timezone › https://kevinnovak.github.io/Time-Zone-Picker
-timezone:
+timezone: Europe/Vienna
 
 # jekyll-seo-tag settings › https://github.com/jekyll/jekyll-seo-tag/blob/master/docs/usage.md
 # ↓ --------------------------
 
-title: Chirpy # the main title
+title: Ramses # the main title
 
-tagline: A text-focused Jekyll theme # it will display as the sub-title
+tagline: "ML and maybe other stuff too"
 
 description: >- # used by seo meta and the atom feed
-  A minimal, responsive and feature-rich Jekyll theme for technical writing.
+  blog, machine learning, github
 
 # Fill in the protocol & hostname for your site.
 # e.g. 'https://username.github.io', note that it does not end with a '/'.
-url: ""
+url: "https://HubiRa.github.io"
 
 github:
-  username: github_username # change to your github username
+  username: HubiRa # change to your github username
 
 twitter:
-  username: twitter_username # change to your twitter username
+  username: "@HRamses2" # change to your twitter username
 
 social:
   # Change to your full name.
@@ -96,7 +96,7 @@ theme_mode: # [light | dark]
 cdn:
 
 # the avatar on sidebar, support local or CORS resources
-avatar:
+avatar: /assets/img/favicons/pac.png
 
 # The URL of the site-wide social preview image used in SEO `og:image` meta tag.
 # It can be overridden by a customized `page.image` in front matter.
