@@ -434,7 +434,7 @@ If you find **S-BRaCE** useful and intend to use it, please cite this blog via:
 ```bibtex
 @misc{Ramsauer2024,
   author = {Hubert Ramsauer},
-  title = {S-[TB]RaCE: Learning Sparse Binary Representation of Contrastive Embeddings},
+  title = {S-BRaCE: Learning Sparse Binary Representation of Contrastive Embeddings},
   year = {2024},
   url = {https://myblog.com/your-post-url},
   note = {Accessed: YYYY-MM-DD}
