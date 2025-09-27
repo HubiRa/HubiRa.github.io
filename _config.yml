@@ -14,9 +14,9 @@ timezone: Europe/Vienna
 # jekyll-seo-tag settings › https://github.com/jekyll/jekyll-seo-tag/blob/master/docs/usage.md
 # ↓ --------------------------
 
-title: Ramses # the main title
+title: Ill Conditioned # the main title
 
-tagline: "ML and maybe other stuff too"
+tagline: "Random ML ideas and other stuff too"
 
 description: >- # used by seo meta and the atom feed
   blog, machine learning, github
