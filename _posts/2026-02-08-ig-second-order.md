@@ -20,7 +20,25 @@ This is Part 1 of a short series on **Integrated Gradients** (IG). It is based o
 
 My main interest at that time was to use IG for optimization and/or pruning. This led me down a rabbit hole with some results that are at least not completely uninteresting (I hope).
 
-The first result, presented in this post, might be obvious to the mathematically more inclined reader. In short it states that IG is exactly a first-order term corrected by a **path-averaged curvature** term. This first-order term is exactly **Input×Gradient**, introduced in [Not Just a Black Box](https://arxiv.org/abs/1605.01713)[^3]. This will be derived in this blog post. The original derivation was pretty messy. This blog presents a cleaned up version via integration by parts, which was absolutely not the path I initially took. In any case let's set up the notation.
+The first result, presented in this post, might be obvious to the mathematically more inclined reader. In short it states that IG is exactly a first-order term corrected by a **path-averaged curvature** term. This first-order term is exactly **Input×Gradient**, introduced in [Not Just a Black Box](https://arxiv.org/abs/1605.01713)[^3]. This will be derived in this blog post. The original derivation was pretty messy. This blog presents a cleaned up version via integration by parts, which was absolutely not the path I initially took.
+
+### Main result
+
+For the straight-line path from baseline $x_0$ to input $x$, with displacement $s := x - x_0$, Integrated Gradients can be written exactly as
+
+$$
+\mathrm{IG}(x) = s \odot \nabla f(x) - s \odot [\bar{H} s],
+$$
+
+where
+
+$$
+\bar{H} = \int_0^1 \alpha \, \nabla^2 f(x_0 + \alpha s) \, d\alpha.
+$$
+
+So IG is not just an averaged-gradient heuristic: it is exactly **Input×Gradient** (or more precisely Gradient×Input-Difference) plus a **curvature correction** accumulated along the path.
+
+In the following we will set up the notation and derive the result above.
 
 ---
 
